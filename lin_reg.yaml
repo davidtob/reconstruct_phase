@@ -1,0 +1,38 @@
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:timit_phase_from_amp.TIMITPhaseFromAmp {
+        which_set: 'train',
+    },
+    model: !obj:pylearn2.models.mlp.MLP {
+        layers: [
+            !obj:pylearn2.models.mlp.Linear {
+                dim: 240,
+                layer_name: 'output',
+                irange: 0.00001
+            }
+        ],
+        input_space: !obj:pylearn2.space.VectorSpace {
+            dim: 120,
+        }
+    },
+    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD {
+        batch_size: 256,
+        batches_per_iter: 392,
+        learning_rate: %(learning_rate)f,
+        monitoring_dataset: {
+            'train' : *train,
+            'valid' : !obj:timit_phase_from_amp.TIMITPhaseFromAmp {
+                which_set: 'valid',
+            }
+        },
+        termination_criterion: !obj:pylearn2.termination_criteria.EpochCounter {
+            max_epochs: %(max_epochs)d
+        },
+    },
+    extensions: [
+        !obj:jobman_monitor_extension.JobmanMonitor {},
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+            channel_name: 'valid_objective',
+            save_path: 'best.pkl'
+        }
+    ]
+}
