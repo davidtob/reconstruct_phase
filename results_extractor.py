@@ -17,7 +17,7 @@ def reconstruct_phase( train_object ):
     norms = numpy.sqrt( phases[:,:l]**2 + phases[:,l:]**2 )
     phases = phases / numpy.hstack( (norms,norms) )
     
-    return list( valid_dataset.to_audio( amps, phases ).ravel() )
+    return list( map( lambda x: int(x), valid_dataset.to_audio( amps, phases ).ravel() ) )
 
 def results_extractor(train_object):
     channels = train_object.model.monitor.channels
