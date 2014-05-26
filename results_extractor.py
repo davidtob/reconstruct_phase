@@ -44,4 +44,4 @@ def results_extractor(train_object):
               #examples_seen=examples_seen,
               #epochs_seen=epochs_seen,
               total_seconds_last_epoch=total_seconds_last_epoch,
-              reconstructed_phase = reconstructed_phase )
+              reconstructed_phase = json.dumps(reconstructed_phase) )
