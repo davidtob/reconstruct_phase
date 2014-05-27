@@ -37,7 +37,7 @@ def results_extractor(train_object):
     
     #reconstructed_phase = ('sound', reconstruct_phase( train_object ) )
     #f = open('reconstructed_phase.wav')
-    scipy.io.wavfile.write('reconstructed_phase.wav', 16000, reconstruct_phase( train_object ) )
+    scipy.io.wavfile.write('reconstructed_phase.wav', 16000, numpy.array( reconstruct_phase( train_object ) ) )
     
 
     return DD(best_valid_bpc=best_valid_obj,
