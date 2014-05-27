@@ -2,6 +2,7 @@ from jobman.tools import DD
 import numpy
 import json
 import theano
+import scipy.io.wavfile
 
 def reconstruct_phase( train_object ):
     model = train_object.model
@@ -34,7 +35,10 @@ def results_extractor(train_object):
     #epochs_seen = 0#channels['epochs_seen']
     total_seconds_last_epoch = int(10*channels['total_seconds_last_epoch'].val_record[-1])/10.0
     
-    reconstructed_phase = ('sound', reconstruct_phase( train_object ) )
+    #reconstructed_phase = ('sound', reconstruct_phase( train_object ) )
+    #f = open('reconstructed_phase.wav')
+    scipy.io.wavfile.write('reconstructed_phase.wav', 16000, reconstruct_phase( train_object ) )
+    
 
     return DD(best_valid_bpc=best_valid_obj,
               best_valid_epoch=best_valid_epoch,
@@ -43,5 +47,5 @@ def results_extractor(train_object):
               train_history=json.dumps(train_history),
               #examples_seen=examples_seen,
               #epochs_seen=epochs_seen,
-              total_seconds_last_epoch=total_seconds_last_epoch,
-              reconstructed_phase = json.dumps(reconstructed_phase) )
+              total_seconds_last_epoch=total_seconds_last_epoch )
+              #reconstructed_phase = json.dumps(reconstructed_phase) )
