@@ -3,22 +3,22 @@ import numpy
 import json
 import theano
 import scipy.io.wavfile
+from pylearn2.config import yaml_parse
 
-def reconstruct_phase( train_object ):
-    model = train_object.model
+def reconstruct_phase( model ):
     valid_dataset = model.monitor._datasets[0]
-    print "making function"
+    if isinstance( valid_dataset, basestring ):
+        valid_dataset = yaml_parse.load( valid_dataset )
     X = model.get_input_space().make_batch_theano()
     y = model.fprop(X)
     f = theano.function([X], y)
-    print "end"
     amps = valid_dataset.X[0:100,:]
     phases = f( amps )
     l = phases.shape[1]/2
     norms = numpy.sqrt( phases[:,:l]**2 + phases[:,l:]**2 )
     phases = phases / numpy.hstack( (norms,norms) )
     
-    return list( map( lambda x: int(x), valid_dataset.to_audio( amps, phases ).ravel() ) )
+    return valid_dataset.to_audio( amps, phases ).ravel()
 
 def results_extractor(train_object):
     channels = train_object.model.monitor.channels
@@ -37,7 +37,7 @@ def results_extractor(train_object):
     
     #reconstructed_phase = ('sound', reconstruct_phase( train_object ) )
     #f = open('reconstructed_phase.wav')
-    scipy.io.wavfile.write('reconstructed_phase.wav', 16000, numpy.array( reconstruct_phase( train_object ) ) )
+    scipy.io.wavfile.write('reconstructed_phase.wav', 16000, numpy.array( reconstruct_phase( train_object.model ) ) )
     
 
     return DD(best_valid_bpc=best_valid_obj,
